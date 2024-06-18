@@ -11,6 +11,9 @@ CORS(app)
 def run_code():
     try:
         code = request.json.get('code', '')
+        
+        if not code:
+            return jsonify({'error': 'No code provided'}), 400
 
         filename = f'temp_code_{uuid.uuid4().hex}.py'
 
@@ -28,5 +31,25 @@ def run_code():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/hello', methods=['GET'])
+def run_hello():
+    return jsonify({
+        'result': "Hello World"
+    })
+    
+@app.route('/runback', methods=['POST'])
+def run_back():
+    try:
+        code = request.json.get('code', '')
+        if not code:
+            return jsonify({'error': 'No code provided'}), 400
+        return jsonify({
+            'result': code,
+            'working': 'yes'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
